@@ -54,6 +54,7 @@ const ItemCtrl = (function() {
       return found;
     },
 
+     
     updateItem: function(name, calories) {
       calories = parseInt(calories);
 
@@ -65,8 +66,20 @@ const ItemCtrl = (function() {
           found = item;
         }
       });
-      return found
+      return found;
     },
+
+    deleteItem: function(id){
+        ids= data.items.map(function(item){
+            return item.id
+        });
+
+        // Get index
+        const index = ids.indexOf(id);
+
+        // remove item
+        data.items.splice(index, 1);
+     },
 
     setCurrentItem: function(item) {
       data.currentItem = item;
@@ -158,6 +171,13 @@ const UICtrl = (function() {
       });
     },
 
+      deleteListItem: function(id){
+
+        const itemID = `#item-${id}`;
+        const item = document.querySelector(itemID);
+        item.remove();
+      },
+
     clearInput: function() {
       document.querySelector(UISelectors.itemNameInput).value = "";
       document.querySelector(UISelectors.itemCaloriesInput).value = "";
@@ -220,10 +240,13 @@ const App = (function(ItemCtrl, UICtrl) {
     document.querySelector(UISelectors.itemList).addEventListener("click", itemEditClick);
 
     // update item event 
+    document.querySelector(UISelectors.deleteBtn).addEventListener("click", itemDeleteSubmit);
+
+    
+    // delete item event 
     document.querySelector(UISelectors.updateBtn).addEventListener("click", itemUpdateSubmit);
 
         // Back button event
-
     document.querySelector(UISelectors.backBtn).addEventListener("click", UICtrl.clearEditState);
 
   };
@@ -276,6 +299,21 @@ const App = (function(ItemCtrl, UICtrl) {
 
 
     e.preventDefault();
+  }
+
+  // delete button event
+  const itemDeleteSubmit= function(e){
+    // get current item
+    const currentItem = ItemCtrl.getCurrentItem();
+
+    //delete fron data structure
+    ItemCtrl.deleteItem(currentItem.id);
+
+    // delete from ui
+    UICtrl.deleteListItem (currentItem.id);
+     
+    e.preventDefault();
+
   }
 
   // click edit item
